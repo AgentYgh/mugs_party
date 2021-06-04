@@ -1,5 +1,4 @@
 <?php
-include 'form/sortingForm.php';
 include 'config/configuration.php';
 include 'config/connect.php';
 
