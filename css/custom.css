@@ -126,3 +126,10 @@ div.jumbotron.jumbotron-fluid {
         padding-top:180px;
     }
 }
+.txt-l {
+    font-size: large;
+}
+.round-box {
+    border: 1px solid #CFD4DA;
+    border-radius: 3px;
+}

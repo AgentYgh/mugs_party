@@ -1,31 +1,10 @@
 <?php
-/**
- * Créer une bdd mugs_party et importer le fichier mugs.sql qui se trouve dans le dossier sql.
- * Créer ton fichier db.php avec les infos de connexion.
- *
- * Supprimer le dossier .git
- * Supprimer le fichier README.md
- *
- * Créer un repository (public) mugs_party sur ton github personnel.
- * Ton travail devra être pusher sur ton dépôt mugs_party
- * Le lien de ton dépôt github devra être déposer sur la plateformweb https://e-learning.alaji.fr/ section Développement Web, Devoir: tp mugs_party
- *
- *
- * (10 points, 2 points par emplacement)
- * Tu dois déclarer une variable qui porte le nom du site: Mugs Party
- * Le titre du site Mugs Party, est placé à 5 endroits différents de la page.
- * (référence image: exemple-titre-site.jpg).
- *
- * (1 points)
- * Tu dois déclarer une variable qui contient un tableau des couleurs disponibles pour les mugs: (Noir Blanc Violet Marron Rose Vert Jaune)
- *
- * (4 points)
- * Tu dois créer dans PHPMYADMIN une table sizes avec:
- *  - 1 colonne id de type "entier" de longueur 10 auto_increment avec une clé primaire
- *  - 1 colonne sizes de type "string" de longueur 40
- *  - tu dois insérer les tailles disponibles pour les mugs: (S M XL XXL)
- *  - tu dois exporter la table dans le dossier sql.
- */
+include 'form/sortingForm.php';
+include 'config/configuration.php';
+include 'config/connect.php';
+
+$maintitle = 'Mugs Party';
+$colors = ['Noir','Blanc','Violet','Marron','Rose','Vert','Jaune'];
 ?>
 
 <!doctype html>
@@ -40,6 +19,9 @@
         <link rel="stylesheet" href="css/bootstrap-v4.6.0.css">
         <link rel="stylesheet" href="css/font-awesome-4.7.0.css">
         <link rel="stylesheet" href="css/custom.css">
+        <?php
+        echo '<title>'.$maintitle.'</title>';
+        ?>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -49,6 +31,11 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav mr-auto">
+                    <?php
+                        echo '<li class="nav-item active">
+                            <a class="nav-link txt-l" href="/">'.$maintitle.'</a>
+                        </li>'
+                    ?>
                     <li class="nav-item active">
                         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                     </li>
@@ -69,14 +56,10 @@
                 <div class="new">
 
                     <?php
-                    /**
-                     * (3 points).
-                     *
-                     * Le lien "Ajouter un mug" ci dessous doit être visible et accessible seulement pour les utilisateurs connectés (user).
-                     */
+                    if (isset($_SESSION)) {
+                        echo '<a href="#" class="btn btn-outline-secondary"><i class="fa fa-plus mr-2"></i>Ajouter un mug</a>';
+                    }
                     ?>
-                    <a href="#" class="btn btn-outline-secondary"><i class="fa fa-plus mr-2"></i>Ajouter un mug</a>
-
                 </div>
             </div>
         </div>
@@ -119,7 +102,86 @@
         ?>
 
         <div id="sorting-bar" class="container-fluid sorting-bar">
-            <!-- ton code html, php de la sorting-bar -->
+            <div class="form-inline">
+                <nav class="navbar navbar-expand-lg">
+                    <div class="p-1">
+                        <a>En Stock:</a>
+                        <select name="stock" class="form-control">
+                            <option value='all'>All</option>
+                            <option value='oui'>Oui</option>
+                            <option value='non'>Non</option>
+                        </select>
+                    </div>
+                    <div class="p-1 form-inline">
+                        <div class="form-inline">
+                            <a>Tarif:</a>
+                            <select name="tarif" class="form-control">
+                                <option value='all'>All</option>
+                                <option value='sup'>Supérieur</option>
+                                <option value='inf'>Inférieur</option>
+                            </select>
+                            <form class="p-1 ml-1">
+                                <a>à</a>
+                                <input type="number" class="bg-white round-box form-control" id="trarifA">
+                                <a>€</a>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="p-1">
+                        <a>Couleur:</a>
+                        <select name='color' class='form-control'>
+                            <option value='all'>All</option>
+                            <?php
+                                foreach ($colors as $c) {
+                                    echo '<option value='.$c.'>'.$c.'</option>';
+                                };
+                            ?>
+                        </select>
+                    </div>
+                    <div class="p-1">
+                        <a>Tailles:</a>
+                        <select name="size" class="form-control">
+                            <option value='all'>All</option>
+                            <?php
+                                $sql = 'SELECT * FROM sizes';
+                                if ($result = $mysqli->query($sql)) {
+                                    if ($result->num_rows > 0) {
+                                      while ($row = $result->fetch_assoc()) {
+                                        echo '<option value='.$row['sizes'].'>'.$row['sizes'].'</option>';
+                                      }
+                                    }
+                                  }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="p-1">
+                        <a>Nouveautés:</a>
+                        <select name="new" class='form-control'>
+                            <option value='all'>All</option>
+                            <option value='yes'>Non</option>
+                            <option value='no'>Oui</option>
+                        </select>
+                    </div>
+                    <div class="p-1">
+                        <a>Tendance:</a>
+                        <select name='trend' class='form-control'>
+                            <option value='all'>All</option>
+                            <option value='no'>Non</option>
+                            <option value='yes'>Oui</option>
+                        </select>
+                    </div>
+                    <div class="m-1">
+                        <button class="btn btn-success">
+                            Trier
+                        </button>
+                    </div>
+                    <div class="m-1">
+                        <button class="btn btn-danger">
+                            Reset
+                        </button>
+                    </div>
+                </nav>
+            </div>
         </div>
 
         <?php
@@ -131,6 +193,7 @@
          *
          * Tu dois afficher tous les mugs présents en base de données (ref: Contrainte 1) si aucun tri est fait SINON afficher ceux triés par la barre de recherche.
          *
+         * 
          * Pour les écrans: (référence image: exemple.jpg)
          *  - écran < 600px = 1 carte par ligne
          *  - écran > 600px and < 768px = 2 cartes par ligne
@@ -157,7 +220,9 @@
         ?>
 
         <div class="container mt-40">
-            <!-- ici ton code PHP pour afficher les mugs trouvés. -->
+            <?php
+                include 'form/sortingForm.php';
+            ?>
         </div>
 
         <div class="spacer spacer-md"></div>
@@ -165,7 +230,11 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-5 col-sm-6 footer-box">
-                        <p style="padding-right:80px;"><h4>.</h4>On y trouve de tout et surtout du n'importe quoi !!</p>
+                        <p style="padding-right:80px;"><h4>
+                        <?php    
+                        echo $maintitle.'.';
+                        ?>
+                        </h4>On y trouve de tout et surtout du n'importe quoi !!</p>
                         <h3 class="footer-heading">Nous suivre</h3>
                         <ul class="social-icons">
                             <li><a href="#" target="_blank"><i class="rounded-circle fa fa-google"></i></a></li>
@@ -175,7 +244,11 @@
                         </ul>
                         <h3 class="footer-heading">Contact</h3>
                         <ul class="contact-info">
-                            <li><span class="icon fa fa-home"></span>, 67000 Strasbourg</li>
+                            <li><span class="icon fa fa-home"></span>
+                            <?php
+                                echo $maintitle.',';
+                            ?>
+                            67000 Strasbourg</li>
                             <li><span class="icon fa fa-phone"></span>03.99.98.97.96</li>
                             <li><span class="icon fa fa-envelope"></span>contact@mugsparty.fr</li>
                         </ul>
@@ -226,7 +299,11 @@
                     </div>
                     <div class="col-md-12 footer-box">
                         <div class="copyright">
-                        <p>&copy; 2021. Tous droits réservés.</p>
+                        <p>&copy; 2021. 
+                        <?php    
+                            echo $maintitle.'.';
+                        ?>    
+                        Tous droits réservés.</p>
                         </div>
                     </div>
                 </div>
